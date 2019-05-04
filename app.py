@@ -3,8 +3,6 @@ from flask import abort, Flask, jsonify, request
 
 app = Flask(__name__)
 
-# FhcZWvkJkddwN9Y2peov53Sx
-
 def is_request_valid(request):
     is_token_valid = request.form['token'] == os.environ['SLACK_VERIFICATION_TOKEN']
     is_team_id_valid = request.form['team_id'] == os.environ['SLACK_TEAM_ID']
