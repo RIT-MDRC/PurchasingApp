@@ -1,0 +1,8 @@
+{
+  "team_names": [],
+  "channel_access": {
+    "settings": [],
+    "purchasing": [],
+  },
+  "commands_avail": [],
+}

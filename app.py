@@ -1,4 +1,11 @@
+'''
+Date: 04/06/2019
+Developer: Andrew Serrra
+Description: Contains all the commands that are sent from the slack
+             channel to be processsed.
+'''
 import os
+from Settings import Settings
 from scripts.sheets import addGSheetsRow
 from flask import abort, Flask, jsonify, request
 
@@ -16,8 +23,7 @@ def purchase():
     # Index of the text
     LIST_INDEX_TEXT = 8
 
-    team_names = ["3lb", "30lb", "Pacbot", "URC"]
-
+    settings = Settings()
 
     if not is_request_valid(request):
         abort(400)
@@ -58,7 +64,7 @@ def purchase():
     if t_name not in team_names:
         return jsonify({
             "response_type" : "in_channel",
-            "text": "Team name has to be one of {}.".format(", ".join(t for t in team_names)),
+            "text": "Team name has to be one of {}.".format(", ".join(t for t in settings.team_names)),
         })
 
     # add the data in the spreadsheet
@@ -78,4 +84,31 @@ def purchase():
                 "text" : "Notify Eboard if there is a mistake."
             }
         ],
+    })
+
+@app.route('/set-setting', methods=['POST'])
+def setSettings():
+
+    if not is_request_valid(request):
+        abort(400)
+
+    settings = Settings()
+
+    # Request from slack
+    data = request.form
+
+    # Message to add to json response
+    response_msg = ""
+
+    # set the response message according to channel access
+    if not settings.saveNewTeamName(data):
+        response_msg = "This channel cannot be used to change settings. \
+                        Notify eboard for request."
+    else:
+        response_msg = "Successfully added {} to the team list.".format(data["text"])
+
+
+    return jsonify({
+        "response_type": "in_channel",
+        "text": response_msg,
     })
