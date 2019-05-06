@@ -1,3 +1,8 @@
+'''
+Date: 05/06/2019
+Developer: Andrew Serrra
+Description: Functions to do google sheets operations
+'''
 import os
 import datetime
 import gspread
