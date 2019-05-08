@@ -4,7 +4,7 @@ This is a Slack app that receives a message from club members in the channel and
 
 ## Slash Commands
 
-1. Format: /purchase <team-name> <part-name> <quantity> <price-per-unit> <company> <link>
+1. Format: /purchase \<team-name\> \<part-name\> <quantity> <price-per-unit> <company> <link>
    Access Channel: #eboard, #purchasing 
    Purpose: It will take the values after the slash command (/purchase) and add it to the purchasing list for the treasurer to             do ordering of the product.
    Note: If there is a case that one parameter has to have a space in between, you will receive an error message. Use                  underscores (_) to have them counted as one parameter.
