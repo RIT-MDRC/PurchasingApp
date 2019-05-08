@@ -1,1 +1,25 @@
-{"team_names": ["Pacbot", "3lb", "30lb", "URC"], "channel_access": {"settings": ["eboard", "purchasing"], "purchasing": ["eboard", "purchasing"]}, "commands_avail": {"settings": ["--add-team"], "purchasing": []}}
+{
+    "team_names": [
+        "Pacbot",
+        "3lb",
+        "30lb",
+        "URC"
+    ],
+    "channel_access": {
+        "settings": [
+            "eboard",
+            "purchasing"
+        ],
+        "purchasing": [
+            "eboard",
+            "purchasing"
+        ]
+    },
+    "commands_avail": {
+        "settings": [
+            "--add-team",
+            "--remove-team"
+        ],
+        "purchasing": []
+    }
+}

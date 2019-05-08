@@ -17,4 +17,4 @@ def parseCommands(data_text):
     #         input_text["inputs"] = data[i:]
     #         break
 
-    return data_text
+    return list(word.lower() for word in data_text)

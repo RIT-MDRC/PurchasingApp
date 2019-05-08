@@ -7,7 +7,7 @@ Description: Contains all the commands that are sent from the slack
 import os
 from Settings import Settings
 from scripts.helpers import *
-from scripts.sheets import addGSheetsRow
+from scripts.sheets import GSheetsAgent
 from flask import abort, Flask, jsonify, request
 
 app = Flask(__name__)
@@ -68,8 +68,10 @@ def purchase():
             "text": "Team name has to be one of {}.".format(", ".join(t for t in settings.team_names)),
         })
 
+
+    gs_agent = GSheetsAgent()
     # add the data in the spreadsheet
-    addGSheetsRow(data)
+    gs_agent.addGSheetsRow(data)
 
     return jsonify({
         "response_type": "in_channel",
@@ -106,7 +108,7 @@ def setSettings():
     if data_text[COMMAND_INDEX] not in commands_available:
         return jsonify({
             "response_type": "in_channel",
-            "text": "Commands do not match {}".format(", ".join(command for command in commands_available)),
+            "text": "Command do not match {}".format(", ".join(command for command in commands_available)),
         })
 
     # Message to add to json response
@@ -114,10 +116,18 @@ def setSettings():
 
     if data_text[COMMAND_INDEX] == "--add-team":
         # set the response message according to channel access
-        if not settings.setNewTeamName(data["channel_name"], data_text):
-            response_msg = "This channel cannot be used to change settings.\nOnly eboard has access."
+        # and if the team is not already created
+        if data_text[-1] not in settings.team_names:
+            response_msg = settings.setTeam(data["channel_name"], data_text, action="add")
         else:
-            response_msg = "Successfully added {} to the team list.".format(data["text"][-1])
+            response_msg = "Team already in the list."
+    elif data_text[COMMAND_INDEX] == "--remove-team":
+        # set the response message according to channel access
+        # and team is already created
+        if data_text[-1] in settings.team_names:
+            response_msg = settings.setTeam(data["channel_name"], data_text, action="remove")
+        else:
+            response_msg = "Team not in the list."
 
     return jsonify({
         "response_type": "in_channel",
