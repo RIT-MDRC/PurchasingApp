@@ -13,6 +13,7 @@ class Settings:
         with open("settings.txt", "r") as f:
             data = json.load(f)
 
+            self.file_name = data["file_name"]
             self.team_names = data["team_names"]
             self.channel_access = data["channel_access"]
             self.commands_avail = data["commands_avail"]
@@ -40,9 +41,14 @@ class Settings:
 
         return return_msg
 
+    def getFileName(self):
+
+        return self.file_name
+
     def saveSettings(self):
 
         with open("settings.txt", "w") as text_file:
-            json.dump({ "team_names": self.team_names,
+            json.dump({ "file_name": self.file_name,
+                        "team_names": self.team_names,
                         "channel_access": self.channel_access,
                         "commands_avail": self.commands_avail}, text_file, indent=4)

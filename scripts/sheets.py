@@ -14,7 +14,7 @@ class GSheetsAgent:
             'https://spreadsheets.google.com/feeds',
             'https://www.googleapis.com/auth/drive',
         ]
-        self.file_name = "MDRC - Ledger 2019/20"
+        self.file_name = Settings().getFileName()
         self.credential_path = "/".join([os.path.dirname(os.path.abspath("client_secret.json")),
                                          "client_secret.json"])
         self.credentials = ServiceAccountCredentials.from_json_keyfile_name(self.credential_path, self.scope)
