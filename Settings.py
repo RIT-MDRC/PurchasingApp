@@ -5,6 +5,7 @@ Description: Class that contains settings for the operations,
              saves the data in a file in case of server downtime.
 '''
 import json
+from scripts.helpers import getRandomColor
 
 class Settings:
 
@@ -17,6 +18,7 @@ class Settings:
             self.team_names = data["team_names"]
             self.channel_access = data["channel_access"]
             self.commands_avail = data["commands_avail"]
+            self.commands_avail_help = data["commands_avail_help"]
 
     def setTeam(self, data_ch_name, data_text, action=None):
 
@@ -29,21 +31,42 @@ class Settings:
 
         if action == "add":
             # add the new team name and save to file.
-            self.team_names.append(data_text[-1])
+            self.team_names.append(data_text)
             return_msg = "Successfully added {} from the team list.".format(data_text[-1])
 
         elif action == "remove":
             # remove the team name and save to file.
-            self.team_names.remove(data_text[-1])
+            self.team_names.remove(data_text)
             return_msg = "Successfully removed {} from the team list.".format(data_text[-1])
 
         self.saveSettings()
 
         return return_msg
 
+    def setFileName(self, new_name):
+
+        self.file_name = new_name
+        self.saveSettings()
+
+        return "Changed spreadsheet file name to \"{}\"".format(new_name)
+
     def getFileName(self):
 
         return self.file_name
+
+    def getHelpText(self):
+
+        command_help_pair = zip(self.commands_avail["settings"], self.commands_avail_help["settings"])
+        attachments = []
+
+        for k, v in command_help_pair:
+            attachments.append({
+                "title": k,
+                "text": v,
+                "color": getRandomColor(),
+            })
+
+        return attachments
 
     def saveSettings(self):
 
@@ -51,4 +74,6 @@ class Settings:
             json.dump({ "file_name": self.file_name,
                         "team_names": self.team_names,
                         "channel_access": self.channel_access,
-                        "commands_avail": self.commands_avail}, text_file, indent=4)
+                        "commands_avail": self.commands_avail,
+                        "commands_avail_help": self.commands_avail_help},
+                        text_file, indent=4)

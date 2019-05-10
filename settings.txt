@@ -1,5 +1,5 @@
 {
-    "file_name": "MDRC - Ledger 2019/20",
+    "file_name": "mdrc_ledger_2019/20",
     "team_names": [
         "Pacbot",
         "3lb",
@@ -19,8 +19,18 @@
     "commands_avail": {
         "settings": [
             "--add-team",
-            "--remove-team"
+            "--remove-team",
+            "--file-name",
+            "--help"
         ],
         "purchasing": []
+    },
+    "commands_avail_help" : {
+        "settings": [
+            "Command followed by a space and a team name to add to the list.",
+            "Command followed by a space and a team name to remove from the list.",
+            "Command followed by a space and a file name use as the spreadsheet.",
+            "Displays all commands and their format in plain text."
+        ]
     }
 }

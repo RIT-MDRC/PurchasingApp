@@ -7,7 +7,7 @@ Description: Contains all the commands that are sent from the slack
 import os
 from Settings import Settings
 from scripts.helpers import *
-from scripts.sheets import GSheetsAgent
+from sheets import GSheetsAgent
 from flask import abort, Flask, jsonify, request
 
 app = Flask(__name__)
@@ -69,9 +69,19 @@ def purchase():
         })
 
 
-    gs_agent = GSheetsAgent()
+    gs_agent = GSheetsAgent(settings)
+
     # add the data in the spreadsheet
-    gs_agent.addGSheetsRow(data)
+    if not gs_agent.addGSheetsRow(data):
+        return jsonify({
+            "response_type": "in_channel",
+            "text" : "File name\"{}\" cannot be found".format(settings.file_name),
+            "attachments" : [
+                {
+                    "text" : "Notify Eboard if there is a mistake."
+                }
+            ],
+        })
 
     return jsonify({
         "response_type": "in_channel",
@@ -89,10 +99,12 @@ def purchase():
         ],
     })
 
+# Help command needs to be completed
 @app.route('/set-setting', methods=['POST'])
 def setSettings():
 
     COMMAND_INDEX = 0
+    TEXT_INDEX = 1
 
     if not is_request_valid(request):
         abort(400)
@@ -103,6 +115,7 @@ def setSettings():
     settings = Settings()
     commands_available = settings.commands_avail["settings"]
 
+    # Split the text into a list to separate command and text
     data_text = parseCommands(data["text"])
 
     if data_text[COMMAND_INDEX] not in commands_available:
@@ -112,24 +125,40 @@ def setSettings():
         })
 
     # Message to add to json response
+    attachments = []
     response_msg = ""
 
     if data_text[COMMAND_INDEX] == "--add-team":
         # set the response message according to channel access
         # and if the team is not already created
         if data_text[-1] not in settings.team_names:
-            response_msg = settings.setTeam(data["channel_name"], data_text, action="add")
+            response_msg = settings.setTeam(data["channel_name"], data_text[TEXT_INDEX], action="add")
         else:
             response_msg = "Team already in the list."
     elif data_text[COMMAND_INDEX] == "--remove-team":
         # set the response message according to channel access
         # and team is already created
         if data_text[-1] in settings.team_names:
-            response_msg = settings.setTeam(data["channel_name"], data_text, action="remove")
+            response_msg = settings.setTeam(data["channel_name"], data_text[TEXT_INDEX], action="remove")
         else:
             response_msg = "Team not in the list."
+    elif data_text[COMMAND_INDEX] == "--file-name" and (data_text is not ""):
+        # set the response message according to file_name availability
+        response_msg = settings.setFileName(data_text[TEXT_INDEX])
+    elif data_text[COMMAND_INDEX] == "--help" and len(data_text) == 1:
+        # Displays the plain text explanation of the commands available
+        attachments = settings.getHelpText()
 
     return jsonify({
         "response_type": "in_channel",
         "text": response_msg,
+        "attachments": attachments
     })
+
+# Has to be completed
+@app.route('/club-signup', methods=['POST'])
+def clubSignup():
+
+    is_request_valid(request)
+
+    pass
