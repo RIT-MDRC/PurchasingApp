@@ -22,6 +22,9 @@ def is_request_valid(request):
     is_token_valid = request.form['token'] == os.environ['SLACK_VERIFICATION_TOKEN']
     is_team_id_valid = request.form['team_id'] == os.environ['SLACK_TEAM_ID']
 
+    print("Token is valid: ",is_token_valid)
+    print("Team Id is valid: ",is_team_id_valid)
+
     return is_token_valid and is_team_id_valid
 
 
@@ -67,17 +70,8 @@ def purchaseForm():
     # add the data in the spreadsheet
     if not gs_agent.addGSheetsRow(response_list):
 
-        return make_response("Error adding a new row to google sheets.", status=500)
-        # print("errr")
-        # return jsonify({
-        #     "response_type": "in_channel",
-        #     "text" : "File name\"{}\" cannot be found".format(settings.file_name),
-        #     "attachments" : [
-        #         {
-        #             "text" : "Notify Eboard if there is a mistake."
-        #         }
-        #     ],
-        # })
+        return make_response("", status=500)
+        
     else:
         res_text = "Successfully added\n\t\tTeam: {}\
                                             \n\t\tPart: {}\
