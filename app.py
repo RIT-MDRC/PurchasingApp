@@ -79,7 +79,12 @@ def purchaseForm():
                                                         submission["company"],
                                                         submission["link"])
 
-        slack_client.chat_update(ts=payload["action_ts"], channel=payload["channel"]["id"], text=res_text)
+        slack_client.api_call(
+            api_method="chat.update",
+            json={
+                'ts':payload["action_ts"], 
+                'channel':payload["channel"]["id"],
+                'text':res_text})
 
         return make_response("", 200)
 
