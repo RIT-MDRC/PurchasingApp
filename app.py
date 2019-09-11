@@ -32,9 +32,9 @@ def is_request_valid(request):
 def index():
     return make_response("The app is running.", 200)
 
-# @app.route('/purchase-form', methods=['POST'])
-def purchaseForm(data, timestamp):    
-    payload = data
+@app.route('/purchase-form', methods=['POST'])
+def purchaseForm():    
+    payload = json.loads(request.form["payload"])
     user_name = payload["user"]
     submission = payload["submission"]
 
@@ -83,14 +83,16 @@ def purchaseForm(data, timestamp):
                                                           submission["link"])
 
         slack_client.api_call(
-            api_method="chat.update",
+            api_method="chat.postMessage",
             json={
                 'as_user':True,
                 # 'ts':payload["action_ts"], 
-                'ts': timestamp,
                 'channel':payload["channel"]["id"],
                 'text':res_text})
 
+        return make_response({'ok':True}, 200)
+
+    return make_response("not successful", 500)
 
 @app.route('/purchase-item', methods=['POST'])
 def purchase():
@@ -101,135 +103,69 @@ def purchase():
     # Settings 
     settings = Settings()
 
-    message_action = json.loads(request.form["payload"])
-    ts = ""
+    team_name_selection = list({ "label": team, "value": team} for team in settings.team_names)
 
-    if message_action["type"] == "interactive_message":
-        team_name_selection = list({ "label": team, "value": team} for team in settings.team_names)
+    message_action = request.form
+    user_id = message_action["user_id"]
 
-        user_id = message_action["user_id"]
-        ts = message_action["message_ts"]
+    open_dialog = slack_client.api_call(
+        api_method="dialog.open",
+        json={
+        "trigger_id":message_action["trigger_id"],
+        "dialog":{
+            "title": "Purchasing Request Form",
+            "submit_label": "Submit",
+            "callback_id": user_id + "purchsing_request_form",
+            "elements": [
+                {
+                    "label": "Team Name",
+                    "type": "select",
+                    "name": "team_name",
+                    "placeholder": "-- team name --",
+                    "options": team_name_selection,
+                },
+                {
+                    "label": "Part Name",
+                    "type": "text",
+                    "name": "part_name",
+                },
+                {
+                    "label": "Price per Unit",
+                    "type": "text",
+                    "name": "unit_price",
+                    "hint": "Enter the price without multiplying with the quantity.",
+                },
+                {
+                    "label": "Quantity",
+                    "type": "text",
+                    "name": "quantity",
+                },
+                {
+                    "label": "Company Name",
+                    "type": "text",
+                    "name": "company",
+                    "Hint": "amazon.com",
+                },
+                {
+                    "label": "Link",
+                    "type": "text",
+                    "name": "link",
+                },
+                {
+                "label": "Additional information",
+                "name": "comment",
+                "type": "textarea",
+                "optional": "true",
+                "hint": "Provide additional information if needed."
+                },
+            ]
+        }
+        }
+    )
 
-        print(message_action)
+    print(open_dialog)
 
-        open_dialog = slack_client.api_call(
-            api_method="dialog.open",
-            json={
-            "trigger_id":message_action["trigger_id"],
-            "dialog":{
-                "title": "Purchasing Request Form",
-                "submit_label": "Submit",
-                "callback_id": user_id + "purchsing_request_form",
-                "elements": [
-                    {
-                        "label": "Team Name",
-                        "type": "select",
-                        "name": "team_name",
-                        "placeholder": "-- team name --",
-                        "options": team_name_selection,
-                    },
-                    {
-                        "label": "Part Name",
-                        "type": "text",
-                        "name": "part_name",
-                    },
-                    {
-                        "label": "Price per Unit",
-                        "type": "text",
-                        "name": "unit_price",
-                        "hint": "Enter the price without multiplying with the quantity.",
-                    },
-                    {
-                        "label": "Quantity",
-                        "type": "text",
-                        "name": "quantity",
-                    },
-                    {
-                        "label": "Company Name",
-                        "type": "text",
-                        "name": "company",
-                        "Hint": "amazon.com",
-                    },
-                    {
-                        "label": "Link",
-                        "type": "text",
-                        "name": "link",
-                    },
-                    {
-                    "label": "Additional information",
-                    "name": "comment",
-                    "type": "textarea",
-                    "optional": "true",
-                    "hint": "Provide additional information if needed."
-                    },
-                ]
-            }
-            }
-        )
-
-        print(open_dialog)
-
-    elif message_action["type"] == "dialog_submission":
-        # purchaseForm(message_action, ts)   
-
-        payload = message_action
-        user_name = payload["user"]
-        submission = payload["submission"]
-
-        response_list = [user_name["name"]]
-
-        settings = Settings()
-
-        print(payload)
-
-        # check if the numerical entries are valid
-        try:
-            submission["quantity"], submission["unit_price"] = int(submission["quantity"]), int(submission["unit_price"])
-
-        except ValueError:
-            # TODO: change to chat update
-            return jsonify({
-                "response_type" : "in_channel",
-                "text": "Values for quantity and price per unit are not valid.",
-                "attachments" :[
-                    {
-                    "text": "Hint: The values should not contain any character except integers."
-                    }
-                ],
-            })
-
-
-        gs_agent = GSheetsAgent(settings)
-
-        for key in submission:
-            response_list.append(submission[key])
-
-        # add the data in the spreadsheet
-        if gs_agent.addGSheetsRow(response_list):
-
-            res_text = "Successfully added\n\t\tTeam: {}\
-                                                \n\t\tPart: {}\
-                                                \n\t\tQuantity: {}\
-                                                \n\t\tPrice per unit: ${}\
-                                                \n\t\tCompany: {}\
-                                                \n\t\tLink: {}\
-                            \nto the pruchasing list.".format(submission["team_name"],
-                                                            submission["part_name"],
-                                                            submission["unit_price"],
-                                                            submission["quantity"],
-                                                            submission["company"],
-                                                            submission["link"])
-
-            slack_client.api_call(
-                api_method="chat.update",
-                json={
-                    'as_user':True,
-                    # 'ts':payload["action_ts"], 
-                    'ts': ts,
-                    'channel':payload["channel"]["id"],
-                    'text':res_text}) 
-
-    return make_response("", 200)
+    return "You will receive a message when it is processed."
 
 @app.route('/set-setting', methods=['POST'])
 def setSettings():
@@ -241,7 +177,7 @@ def setSettings():
         abort(400)
 
     # Request from slack
-    data = json.loads(request.form)
+    data = request.form
 
     settings = Settings()
     commands_available = settings.commands_avail["settings"]
