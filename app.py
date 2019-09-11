@@ -30,6 +30,7 @@ def is_request_valid(request):
 
 @app.route('/', methods=['GET'])
 def index():
+    print(is_request_valid(request))
     return make_response("The app is running.", 200)
 
 @app.route('/purchase-form', methods=['POST'])
@@ -89,8 +90,7 @@ def purchaseForm():
 def purchase():
 
     if not is_request_valid(request):
-        # abort(400)
-        return make_response("meeh", 200)
+        abort(400)
 
     # Settings 
     settings = Settings()
