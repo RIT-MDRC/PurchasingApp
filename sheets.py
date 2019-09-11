@@ -17,7 +17,7 @@ class GSheetsAgent:
         self.file_name = settings.getFileName()
         # self.credential_path = "/".join([os.path.dirname(os.path.abspath("client_secret.json")),
         #                                  "client_secret.json"])
-        self.credential_path = os.path.abspath("client_secret.json"))
+        self.credential_path = os.path.abspath("client_secret.json")
         self.credentials = ServiceAccountCredentials.from_json_keyfile_name(self.credential_path, self.scope)
         self.gc = gspread.authorize(self.credentials)
 
