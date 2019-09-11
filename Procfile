@@ -1,2 +1,2 @@
-web: gunicorn ranti:app
+web: gunicorn app:app
 worker: flask run
