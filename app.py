@@ -103,7 +103,7 @@ def purchase():
     # Settings 
     settings = Settings()
 
-    message_action = json.loads(request.form)
+    message_action = json.loads(request.form["payload"])
     ts = ""
 
     if message_action["type"] == "interactive_message":
