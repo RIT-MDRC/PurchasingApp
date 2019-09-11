@@ -47,6 +47,7 @@ def purchaseForm():
         submission["quantity"], submission["unit_price"] = int(submission["quantity"]), int(submission["unit_price"])
 
     except ValueError:
+        # TODO: change to chat update
         return jsonify({
             "response_type" : "in_channel",
             "text": "Values for quantity and price per unit are not valid.",
@@ -82,6 +83,7 @@ def purchaseForm():
         slack_client.api_call(
             api_method="chat.update",
             json={
+                'as_user':True,
                 'ts':payload["action_ts"], 
                 'channel':payload["channel"]["id"],
                 'text':res_text})
