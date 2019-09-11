@@ -33,7 +33,7 @@ def index():
     return make_response("The app is running.", 200)
 
 # @app.route('/purchase-form', methods=['POST'])
-def purchaseForm(data):    
+def purchaseForm(data, timestamp):    
     payload = data
     user_name = payload["user"]
     submission = payload["submission"]
@@ -86,7 +86,8 @@ def purchaseForm(data):
             api_method="chat.update",
             json={
                 'as_user':True,
-                'ts':payload["action_ts"], 
+                # 'ts':payload["action_ts"], 
+                'ts': timestamp,
                 'channel':payload["channel"]["id"],
                 'text':res_text})
 
@@ -173,7 +174,7 @@ def purchase():
 
         return "You will receive a message when it is processed."
     elif message_action["type"] == "dialog_submission":
-        purchaseForm(message_action)    
+        purchaseForm(message_action, ts)    
 
 @app.route('/set-setting', methods=['POST'])
 def setSettings():
