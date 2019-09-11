@@ -30,7 +30,6 @@ def is_request_valid(request):
 
 @app.route('/', methods=['GET'])
 def index():
-    print(is_request_valid(request))
     return make_response("The app is running.", 200)
 
 @app.route('/purchase-form', methods=['POST'])

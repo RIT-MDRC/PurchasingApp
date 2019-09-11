@@ -14,10 +14,6 @@
         "purchasing": [
             "eboard",
             "purchasing"
-        ],
-        "stats": [
-          "eboard",
-          "purchasing"
         ]
     },
     "commands_avail": {
@@ -27,8 +23,7 @@
             "file-name",
             "help"
         ],
-        "purchasing": [],
-        "stats": []
+        "purchasing": []
     },
     "commands_avail_help" : {
         "settings": [
@@ -37,7 +32,6 @@
             "Command followed by a space and a file name use as the spreadsheet.",
             "Displays all commands and their format in plain text."
         ],
-        "purchasing": [],
-        "stats": []
+        "purchasing": []
     }
 }
