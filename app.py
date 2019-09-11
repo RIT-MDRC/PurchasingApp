@@ -30,14 +30,10 @@ def is_request_valid(request):
 
 @app.route('/', methods=['GET'])
 def index():
-    return make_response("The app is running.", 200)
+    return make_response("The app is running." + SLACK_BOT_TOKEN, 200)
 
 @app.route('/purchase-form', methods=['POST'])
-def purchaseForm():
-
-    # Index of the text
-    LIST_INDEX_TEXT = 8
-
+def purchaseForm():    
     payload = json.loads(request.form["payload"])
     user_name = payload["user"]
     submission = payload["submission"]
