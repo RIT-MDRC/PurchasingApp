@@ -42,6 +42,8 @@ def purchaseForm():
 
     settings = Settings()
 
+    print(payload)
+
     # check if the numerical entries are valid
     try:
         submission["quantity"], submission["unit_price"] = int(submission["quantity"]), int(submission["unit_price"])
@@ -74,11 +76,11 @@ def purchaseForm():
                                             \n\t\tCompany: {}\
                                             \n\t\tLink: {}\
                         \nto the pruchasing list.".format(submission["team_name"],
-                                                        submission["part_name"],
-                                                        submission["unit_price"],
-                                                        submission["quantity"],
-                                                        submission["company"],
-                                                        submission["link"])
+                                                          submission["part_name"],
+                                                          submission["unit_price"],
+                                                          submission["quantity"],
+                                                          submission["company"],
+                                                          submission["link"])
 
         slack_client.api_call(
             api_method="chat.update",
@@ -105,8 +107,6 @@ def purchase():
 
     message_action = request.form
     user_id = message_action["user_id"]
-
-    print(message_action["trigger_id"])
 
     open_dialog = slack_client.api_call(
         api_method="dialog.open",
