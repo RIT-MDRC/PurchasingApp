@@ -30,7 +30,7 @@ def is_request_valid(request):
 
 @app.route('/', methods=['GET'])
 def index():
-    return make_response("The app is running." + SLACK_BOT_TOKEN, 200)
+    return make_response("The app is running.", 200)
 
 @app.route('/purchase-form', methods=['POST'])
 def purchaseForm():    
@@ -64,11 +64,8 @@ def purchaseForm():
         response_list.append(submission[key])
 
     # add the data in the spreadsheet
-    if not gs_agent.addGSheetsRow(response_list):
+    if gs_agent.addGSheetsRow(response_list):
 
-        return make_response("", status=500)
-        
-    else:
         res_text = "Successfully added\n\t\tTeam: {}\
                                             \n\t\tPart: {}\
                                             \n\t\tQuantity: {}\
@@ -86,11 +83,14 @@ def purchaseForm():
 
         return make_response("", 200)
 
+    return make_response("not successful", 500)
+
 @app.route('/purchase-item', methods=['POST'])
 def purchase():
 
     if not is_request_valid(request):
-        abort(400)
+        # abort(400)
+        return make_response("meeh", 200)
 
     # Settings 
     settings = Settings()
