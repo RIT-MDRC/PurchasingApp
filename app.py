@@ -108,6 +108,8 @@ def purchase():
     message_action = request.form
     user_id = message_action["user_id"]
 
+    print(message_action)
+
     open_dialog = slack_client.api_call(
         api_method="dialog.open",
         json={
