@@ -22,7 +22,8 @@ class GSheetsAgent:
 
     def addGSheetsRow(self, data):
         # adds total price = quantity * price per unit
-        data.append(data[2] * data[3])
+        print(data)
+        data.append(data[3] * data[4])
 
         # insert the date as first element
         date = datetime.datetime.now()
@@ -30,7 +31,7 @@ class GSheetsAgent:
 
         try:
             # get the 'Purchasing List' worksheet
-            purchasing_list_ws = self.gc.open(self.file_name).get_worksheet(1)
+            purchasing_list_ws = self.gc.open(self.file_name).get_worksheet(self.getWorksheet("purchasing_list"))
             purchasing_list_ws.append_row(data)
 
             return True
@@ -38,4 +39,13 @@ class GSheetsAgent:
         except:
             return False
 
-        assert isinstance(data, list)
+    def getWorksheet(self, sheet_name):
+
+        if sheet_name == "ledger":
+            return 0
+        elif sheet_name == "purchasing_list":
+            return 1
+        elif sheet_name == "purchasing_checklist":
+            return 2
+        else:
+            return None
