@@ -24,6 +24,9 @@ def is_request_valid(request):
 
     return is_token_valid and is_team_id_valid
 
+@app.route('/', methods=['GET']) {
+    return make_response("The app is running.", 200)
+}
 @app.route('/purchase-form', methods=['POST'])
 def purchaseForm():
 
