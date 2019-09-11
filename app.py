@@ -33,8 +33,8 @@ def index():
     return make_response("The app is running.", 200)
 
 # @app.route('/purchase-form', methods=['POST'])
-def purchaseForm():    
-    payload = json.loads(request.form["payload"])
+def purchaseForm(data):    
+    payload = data
     user_name = payload["user"]
     submission = payload["submission"]
 
@@ -173,7 +173,7 @@ def purchase():
 
         return "You will receive a message when it is processed."
     elif message_action["type"] == "dialog_submission":
-        purchaseForm()    
+        purchaseForm(message_action)    
 
 @app.route('/set-setting', methods=['POST'])
 def setSettings():
