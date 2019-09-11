@@ -91,9 +91,6 @@ def purchaseForm(data, timestamp):
                 'channel':payload["channel"]["id"],
                 'text':res_text})
 
-        return make_response("", 200)
-
-    return make_response("not successful", 500)
 
 @app.route('/purchase-item', methods=['POST'])
 def purchase():
@@ -172,9 +169,67 @@ def purchase():
 
         print(open_dialog)
 
-        return "You will receive a message when it is processed."
     elif message_action["type"] == "dialog_submission":
-        purchaseForm(message_action, ts)    
+        # purchaseForm(message_action, ts)   
+
+        payload = message_action
+        user_name = payload["user"]
+        submission = payload["submission"]
+
+        response_list = [user_name["name"]]
+
+        settings = Settings()
+
+        print(payload)
+
+        # check if the numerical entries are valid
+        try:
+            submission["quantity"], submission["unit_price"] = int(submission["quantity"]), int(submission["unit_price"])
+
+        except ValueError:
+            # TODO: change to chat update
+            return jsonify({
+                "response_type" : "in_channel",
+                "text": "Values for quantity and price per unit are not valid.",
+                "attachments" :[
+                    {
+                    "text": "Hint: The values should not contain any character except integers."
+                    }
+                ],
+            })
+
+
+        gs_agent = GSheetsAgent(settings)
+
+        for key in submission:
+            response_list.append(submission[key])
+
+        # add the data in the spreadsheet
+        if gs_agent.addGSheetsRow(response_list):
+
+            res_text = "Successfully added\n\t\tTeam: {}\
+                                                \n\t\tPart: {}\
+                                                \n\t\tQuantity: {}\
+                                                \n\t\tPrice per unit: ${}\
+                                                \n\t\tCompany: {}\
+                                                \n\t\tLink: {}\
+                            \nto the pruchasing list.".format(submission["team_name"],
+                                                            submission["part_name"],
+                                                            submission["unit_price"],
+                                                            submission["quantity"],
+                                                            submission["company"],
+                                                            submission["link"])
+
+            slack_client.api_call(
+                api_method="chat.update",
+                json={
+                    'as_user':True,
+                    # 'ts':payload["action_ts"], 
+                    'ts': ts,
+                    'channel':payload["channel"]["id"],
+                    'text':res_text}) 
+
+    return make_response("", 200)
 
 @app.route('/set-setting', methods=['POST'])
 def setSettings():
