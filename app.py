@@ -90,7 +90,7 @@ def purchaseForm():
                 'channel':payload["channel"]["id"],
                 'text':res_text})
 
-        return make_response({'ok':True}, 200)
+        return make_response("", 200)
 
     return make_response("not successful", 500)
 
