@@ -18,10 +18,10 @@
     },
     "commands_avail": {
         "settings": [
-            "--add-team",
-            "--remove-team",
-            "--file-name",
-            "--help"
+            "add-team",
+            "remove-team",
+            "file-name",
+            "help"
         ],
         "purchasing": []
     },
@@ -31,6 +31,7 @@
             "Command followed by a space and a team name to remove from the list.",
             "Command followed by a space and a file name use as the spreadsheet.",
             "Displays all commands and their format in plain text."
-        ]
+        ],
+        "purchasing": []
     }
 }
